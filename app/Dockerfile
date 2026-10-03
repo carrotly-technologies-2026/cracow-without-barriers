@@ -22,6 +22,6 @@ COPY --from=build /app/data/snapshot ./data/snapshot
 COPY --from=build /app/data/sample-places.json /app/data/sample-reports.json ./data/
 RUN mkdir -p /app/data/store && chown -R node:node /app/data
 USER node
-ENV CACHE_DIR=/app/data/store/cache REPORTS_FILE=/app/data/store/reports.json
+ENV CACHE_DIR=/app/data/store/cache REPORTS_FILE=/app/data/store/reports.json OSM_TTL_DAYS=3650
 EXPOSE 3000
 CMD ["node", "server.js"]
