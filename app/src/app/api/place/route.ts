@@ -9,6 +9,7 @@ import type { Fact, Provenance } from '@/lib/types';
 export const dynamic = 'force-dynamic';
 
 const UA = 'krakow-bez-barier/0.1';
+const SNAPSHOT_TTL_MS = 1000 * 60 * 60 * 24 * Number(process.env.OSM_TTL_DAYS ?? 3);
 const ATTRS = ['wheelchair', 'entrance_step', 'door_width', 'automatic_door', 'lift', 'toilet', 'level'];
 
 async function samplePlaces(): Promise<any[]> {
@@ -21,7 +22,7 @@ async function featuredSnapshot(ref: string): Promise<any | null> {
     const p = j.places.find((x: any) => x.osm === ref);
     if (!p) return null;
     const [type, id] = ref.split('/');
-    return { type, id: Number(id), tags: { name: p.name, ...p.tags }, timestamp: p.timestamp };
+    return { type, id: Number(id), tags: { name: p.name, ...p.tags }, timestamp: p.timestamp, fetchedAt: j.fetchedAt };
   } catch { return null; }
 }
 
@@ -30,7 +31,7 @@ async function fetchElement(ref: string): Promise<any | null> {
   if (!['node', 'way', 'relation'].includes(type) || !/^\d+$/.test(id)) return null;
   for (const url of ['https://overpass-api.de/api/interpreter', 'https://maps.mail.ru/osm/tools/overpass/api/interpreter', 'https://overpass.openstreetmap.fr/api/interpreter']) {
     try {
-      const res = await fetch(url, { method: 'POST', headers: { 'User-Agent': UA, Accept: '*/*', 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(`[out:json][timeout:20];${type}(${id});out center meta;`), signal: AbortSignal.timeout(12000) });
+      const res = await fetch(url, { method: 'POST', headers: { 'User-Agent': UA, Accept: '*/*', 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(`[out:json][timeout:20];${type}(${id});out center meta;`), signal: AbortSignal.timeout(5000) });
       if (res.ok) return (await res.json()).elements?.[0] ?? null;
     } catch { /* try next */ }
   }
@@ -56,8 +57,11 @@ export async function GET(req: Request) {
     for (const d of sp.declared) facts.push({ attr: d.attr, value: d.value, prov: { source: 'sample', ref: 'Deklaracja właściciela (DANE PRZYKŁADOWE)', updated: new Date(d.updated).toISOString(), confidence: 'likely', freshnessBasis: 'sample' } });
     for (const r of sp.reportsNearby) facts.push({ attr: r.type === 'steps' ? 'entrance_step' : 'report', value: r.type === 'steps' ? 'yes' : r.type, prov: { source: 'sample', ref: 'Zgłoszenie użytkownika (DANE PRZYKŁADOWE)', updated: r.createdAt, confidence: 'unverified', freshnessBasis: 'sample' } });
   } else if (osmRef) {
-    let el = await fetchElement(osmRef);
-    if (!el) { el = await featuredSnapshot(osmRef); if (el) osmState = 'cache'; }
+    // featured venues: answer instantly from the bundled OSM snapshot while it is fresh (same TTL as map tiles); otherwise try live, then fall back
+    const snap = await featuredSnapshot(osmRef);
+    const fresh = snap && Date.now() - new Date(snap.fetchedAt).getTime() < SNAPSHOT_TTL_MS;
+    let el = fresh ? snap : await fetchElement(osmRef);
+    if (!el && snap) { el = snap; osmState = 'cache'; }
     if (!el) osmState = 'unavailable';
     else {
       osmTags = el.tags ?? {};
