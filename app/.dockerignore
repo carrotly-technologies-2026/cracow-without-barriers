@@ -1,0 +1,5 @@
+node_modules
+.next
+data/cache
+data/reports.json
+e2e

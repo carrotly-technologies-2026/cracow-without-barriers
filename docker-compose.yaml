@@ -1,0 +1,54 @@
+# Kraków bez barier – everything the demo needs.
+#   docker compose up --build   -> http://localhost:3000
+# The web app starts immediately. A local OSRM (pedestrian graph from the Geofabrik Małopolska extract) is built in the
+# background on first start (download ~150 MB + a few minutes); until it is ready the app falls back to the public OSRM.
+services:
+  web:
+    build: ./app
+    ports:
+      - '3000:3000'
+    environment:
+      ROUTER_URL: '${ROUTER_URL:-http://osrm:5000,https://routing.openstreetmap.de/routed-foot}'
+      PHOTON_URL: '${PHOTON_URL:-https://photon.komoot.io/api/}'
+      OVERPASS_URLS: '${OVERPASS_URLS:-https://overpass.openstreetmap.fr/api/interpreter,https://overpass-api.de/api/interpreter,https://overpass.kumi.systems/api/interpreter}'
+      OSM_TTL_DAYS: '${OSM_TTL_DAYS:-3}'
+    volumes:
+      - 'web_data:/app/data/store'
+    restart: unless-stopped
+
+  osrm-download:
+    image: curlimages/curl:8.10.1
+    user: root
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - |
+        [ -f /data/malopolskie-latest.osrm.mldgr ] || [ -f /data/malopolskie-latest.osm.pbf ] || \
+        curl -fL --retry 5 --retry-delay 5 -o /data/malopolskie-latest.osm.pbf https://download.geofabrik.de/europe/poland/malopolskie-latest.osm.pbf
+    volumes:
+      - 'osrm_data:/data'
+
+  osrm-prep:
+    image: ghcr.io/project-osrm/osrm-backend:v5.27.1
+    entrypoint: ['/bin/bash', '/prep.sh']
+    depends_on:
+      osrm-download:
+        condition: service_completed_successfully
+    volumes:
+      - './osrm/prep.sh:/prep.sh:ro'
+      - 'osrm_data:/data'
+
+  osrm:
+    image: ghcr.io/project-osrm/osrm-backend:v5.27.1
+    command: osrm-routed --algorithm mld /data/malopolskie-latest.osrm
+    depends_on:
+      osrm-prep:
+        condition: service_completed_successfully
+    volumes:
+      - 'osrm_data:/data'
+    ports:
+      - '5000:5000'
+    restart: unless-stopped
+
+volumes:
+  web_data:
+  osrm_data:
