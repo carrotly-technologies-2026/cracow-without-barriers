@@ -45,6 +45,7 @@ export default function App() {
   const [selFeature, setSelFeature] = useState<MapFeature | null>(null);
   const [zoom, setZoom] = useState(city.zoom);
   const [samples, setSamples] = useState<{ id: string; name: string; lat: number; lon: number }[]>([]);
+  const [featuredRaw, setFeaturedRaw] = useState<{ osm: string; name: string; category: string; lat: number; lon: number; wheelchair: string }[]>([]);
   const viewport = useRef<[number, number, number, number] | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const liveRef = useRef<HTMLDivElement>(null);
@@ -52,6 +53,8 @@ export default function App() {
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
   useEffect(() => { fetch('/api/geocode?q=demo').then((r) => r.json()).then((j) => setSamples((j.results ?? []).filter((x: any) => x.sample).map((x: any) => ({ id: x.sample, name: x.name, lat: x.lat, lon: x.lon })))).catch(() => {}); }, []);
 
+  useEffect(() => { fetch('/api/featured').then((r) => r.json()).then((j) => setFeaturedRaw(j.places ?? [])).catch(() => {}); }, []);
+  const featured = useMemo(() => featuredRaw.map((f) => ({ ...f, label: t('featured.aria', { name: f.name, status: t(`wc.${['yes', 'limited', 'no', 'designated'].includes(f.wheelchair) ? f.wheelchair : 'unknown'}`) }) })), [featuredRaw, t]);
   const selected = routes.find((r) => r.id === selId) ?? null;
 
   const search = useCallback(async (f = from, to_ = to, p = prefs) => {
@@ -121,7 +124,7 @@ export default function App() {
       <div className="relative h-[42dvh] shrink-0 lg:order-2 lg:h-full lg:flex-1">
         <MapView center={city.center} zoom={city.zoom} routes={routes} selectedId={selId} selectedIssueId={issueId} onSelectIssue={(id) => { setIssueId(id); setTab('route'); }} onPickRoute={(id) => { setSelId(id); }}
           from={from} to={to} features={tab === 'explore' ? features : []} layers={layers} onFeature={(f) => { setSelFeature(f); setTab('explore'); }} pickMode={!!pick} onPick={mapPick}
-          onViewport={(b, z) => { viewport.current = b; setZoom(z); if (tab === 'explore') loadFeatures(); }} samplePlaces={samplePlaces} onSamplePlace={(id) => { const s = samples.find((x) => x.id === id)!; openPlace({ name: s.name, lat: s.lat, lon: s.lon, sample: id }); setTab('route'); }}
+          onViewport={(b, z) => { viewport.current = b; setZoom(z); if (tab === 'explore') loadFeatures(); }} samplePlaces={samplePlaces} featured={featured} onFeaturedPlace={(osm) => { const f = featuredRaw.find((x) => x.osm === osm)!; openPlace({ name: f.name, lat: f.lat, lon: f.lon, osm }); setTab('route'); }} onSamplePlace={(id) => { const s = samples.find((x) => x.id === id)!; openPlace({ name: s.name, lat: s.lat, lon: s.lon, sample: id }); setTab('route'); }}
           fitKey={fitKey} flyTo={flyTo} label={t('a11y.mapAlt')} />
         {pick && <div role="status" className="absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white shadow-lg">{pick === 'report' ? t('report.pick') : t('route.pickOnMap')} ·{' '}<button className="underline" onClick={() => setPick(null)}>{t('close')}</button></div>}
         <button type="button" onClick={() => setPick('report')} className="absolute bottom-6 right-3 z-10 flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-bold text-brand-900 shadow-lg ring-1 ring-black/10 hover:bg-brand-50"><Megaphone size={16} aria-hidden />{t('report.here')}</button>

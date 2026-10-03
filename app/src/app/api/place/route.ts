@@ -9,10 +9,20 @@ import type { Fact, Provenance } from '@/lib/types';
 export const dynamic = 'force-dynamic';
 
 const UA = 'krakow-bez-barier/0.1';
-const ATTRS = ['wheelchair', 'entrance_step', 'door_width', 'automatic_door', 'lift', 'toilet'];
+const ATTRS = ['wheelchair', 'entrance_step', 'door_width', 'automatic_door', 'lift', 'toilet', 'level'];
 
 async function samplePlaces(): Promise<any[]> {
   try { return JSON.parse(await fs.readFile(path.join(process.cwd(), 'data', 'sample-places.json'), 'utf8')); } catch { return []; }
+}
+
+async function featuredSnapshot(ref: string): Promise<any | null> {
+  try {
+    const j = JSON.parse(await fs.readFile(path.join(process.cwd(), 'data', 'featured-places.json'), 'utf8'));
+    const p = j.places.find((x: any) => x.osm === ref);
+    if (!p) return null;
+    const [type, id] = ref.split('/');
+    return { type, id: Number(id), tags: { name: p.name, ...p.tags }, timestamp: p.timestamp };
+  } catch { return null; }
 }
 
 async function fetchElement(ref: string): Promise<any | null> {
@@ -46,7 +56,8 @@ export async function GET(req: Request) {
     for (const d of sp.declared) facts.push({ attr: d.attr, value: d.value, prov: { source: 'sample', ref: 'Deklaracja właściciela (DANE PRZYKŁADOWE)', updated: new Date(d.updated).toISOString(), confidence: 'likely', freshnessBasis: 'sample' } });
     for (const r of sp.reportsNearby) facts.push({ attr: r.type === 'steps' ? 'entrance_step' : 'report', value: r.type === 'steps' ? 'yes' : r.type, prov: { source: 'sample', ref: 'Zgłoszenie użytkownika (DANE PRZYKŁADOWE)', updated: r.createdAt, confidence: 'unverified', freshnessBasis: 'sample' } });
   } else if (osmRef) {
-    const el = await fetchElement(osmRef);
+    let el = await fetchElement(osmRef);
+    if (!el) { el = await featuredSnapshot(osmRef); if (el) osmState = 'cache'; }
     if (!el) osmState = 'unavailable';
     else {
       osmTags = el.tags ?? {};
@@ -55,6 +66,8 @@ export async function GET(req: Request) {
       if (osmTags['door:width'] || osmTags.width) facts.push({ attr: 'door_width', value: (osmTags['door:width'] ?? osmTags.width).replace(/[^0-9.,]/g, ''), prov });
       if (osmTags.automatic_door) facts.push({ attr: 'automatic_door', value: osmTags.automatic_door === 'no' ? 'no' : 'yes', prov });
       if (osmTags.elevator === 'yes' || osmTags['wheelchair:description']) facts.push({ attr: 'lift', value: osmTags.elevator ?? 'yes', prov });
+      if (osmTags['toilets:wheelchair']) facts.push({ attr: 'toilet', value: osmTags['toilets:wheelchair'], prov });
+      if (osmTags.level) facts.push({ attr: 'level', value: osmTags.level, prov });
       name ||= osmTags.name ?? '';
     }
   }

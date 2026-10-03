@@ -19,11 +19,12 @@ export function StatusBanner({ status, t, lang }: { status: DataStatus | null; t
 
 const WC_KEYS = ['yes', 'limited', 'no', 'designated'];
 export function PlaceCard({ place, onClose, onRoute, t, lang }: { place: any; onClose: () => void; onRoute: () => void; t: TFn; lang: Lang }) {
-  const labels: Record<string, string> = { wheelchair: t('place.title'), entrance_step: t('place.step'), door_width: t('place.door'), automatic_door: t('place.automatic'), lift: t('place.lift'), toilet: t('feat.toilets') };
+  const labels: Record<string, string> = { wheelchair: t('place.title'), entrance_step: t('place.step'), door_width: t('place.door'), automatic_door: t('place.automatic'), lift: t('place.lift'), toilet: t('feat.toilets'), level: t('place.level') };
   const show = (r: any) => {
     if (r.status === 'conflict') return t('place.conflict');
     if (r.value === 'unknown') return t('wc.unknown');
-    if (r.attr === 'wheelchair') return t(`wc.${WC_KEYS.includes(r.value) ? r.value : 'unknown'}`);
+    if (r.attr === 'wheelchair' || r.attr === 'toilet') return t(`wc.${WC_KEYS.includes(r.value) ? r.value : 'unknown'}`);
+    if (r.attr === 'level') return r.value === '0' ? t('place.level0') : r.value.startsWith('-') ? `${r.value} (${t('place.basement')})` : r.value;
     if (r.attr === 'door_width') return `${r.value} m`;
     return r.value === 'yes' ? (lang === 'pl' ? 'tak' : 'yes') : r.value === 'no' ? (lang === 'pl' ? 'nie' : 'no') : r.value;
   };
@@ -37,7 +38,7 @@ export function PlaceCard({ place, onClose, onRoute, t, lang }: { place: any; on
       {place.osm !== 'ok' && <p role="status" className="mt-2 rounded-lg bg-amber-50 p-2 text-sm text-amber-950">{t(`status.osm.${place.osm}`)}</p>}
       {!place.hasData && <p className="mt-2 flex gap-2 rounded-lg bg-zinc-100 p-2 text-sm"><CircleHelp size={18} aria-hidden className="shrink-0" />{t('place.noData')}</p>}
       <dl className="mt-3 space-y-2">
-        {place.resolved.map((r: any) => (
+        {place.resolved.filter((r: any) => !(r.attr === 'level' && r.status === 'unknown')).map((r: any) => (
           <div key={r.attr} className={`rounded-xl border p-2.5 ${r.status === 'conflict' ? 'border-fuchsia-500 bg-fuchsia-50' : r.status === 'unknown' ? 'border-dashed border-zinc-400 bg-zinc-50' : 'border-slate-200'}`}>
             <dt className="text-xs font-semibold uppercase tracking-wide text-slate-600">{labels[r.attr]}</dt>
             <dd className="mt-0.5 flex flex-wrap items-center gap-2 text-sm font-semibold">{show(r)} <ConfBadge c={r.confidence} t={t} /></dd>

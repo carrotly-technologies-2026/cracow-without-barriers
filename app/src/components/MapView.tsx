@@ -18,6 +18,7 @@ interface Props {
   pickMode: boolean; onPick: (lat: number, lon: number) => void;
   onViewport: (bbox: [number, number, number, number], zoom: number) => void;
   samplePlaces: { id: string; name: string; lat: number; lon: number }[]; onSamplePlace: (id: string) => void;
+  featured: { osm: string; name: string; label: string; wheelchair: string; lat: number; lon: number }[]; onFeaturedPlace: (osm: string) => void;
   fitKey: number; flyTo: { lat: number; lon: number; k: number } | null; label: string;
 }
 
@@ -91,7 +92,7 @@ export default function MapView(p: Props) {
   function syncMarkers() {
     const m = map.current; if (!m) return;
     markers.current.forEach((x) => x.remove()); markers.current = [];
-    const { routes, selectedId, selectedIssueId, from, to, samplePlaces } = props.current;
+    const { routes, selectedId, selectedIssueId, from, to, samplePlaces, featured } = props.current;
     const add = (node: HTMLElement, lat: number, lon: number, anchor: any = 'center', offset?: [number, number]) => markers.current.push(new maplibregl.Marker({ element: node, anchor, offset }).setLngLat([lon, lat]).addTo(m));
     const sel = routes.find((r) => r.id === selectedId);
     const placed: { lat: number; lon: number }[] = [];
@@ -108,6 +109,15 @@ export default function MapView(p: Props) {
         const pin = (color: string, text: string) => { const w = document.createElement('div'); w.innerHTML = `<div class="pin" style="background:${color}"></div><span style="position:absolute;left:0;top:5px;width:34px;text-align:center;color:#fff;font-weight:700;font-size:13px">${text}</span>`; w.style.cssText = 'position:relative;width:34px;height:34px'; w.setAttribute('aria-hidden', 'true'); return w; };
     if (from) add(pin('#0f766e', 'A'), from.lat, from.lon, 'bottom-left');
     if (to) add(pin('#b91c1c', 'B'), to.lat, to.lon, 'bottom-left');
+    const FSTYLE: Record<string, [string, string]> = { yes: ['#047857', '✓'], designated: ['#047857', '✓'], limited: ['#b45309', '~'], no: ['#b91c1c', '✕'] };
+    featured.forEach((f) => {
+      const [bg, sym] = FSTYLE[f.wheelchair] ?? ['#52525b', '?'];
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'issue-marker';
+      b.style.cssText += `;background:${bg};width:28px;height:28px;font-size:14px`;
+      b.textContent = sym; b.title = f.label; b.setAttribute('aria-label', f.label);
+      b.onclick = (e) => { e.stopPropagation(); props.current.onFeaturedPlace(f.osm); };
+      add(b, f.lat, f.lon);
+    });
     samplePlaces.forEach((s) => {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'issue-marker'; b.style.cssText += ';background:#7c2d12;border-radius:6px;width:28px;height:28px';
       b.textContent = 'D'; b.title = s.name; b.setAttribute('aria-label', s.name);
@@ -116,7 +126,7 @@ export default function MapView(p: Props) {
     });
   }
 
-  useEffect(() => { sync(); syncMarkers(); /* eslint-disable-next-line */ }, [p.routes, p.selectedId, p.selectedIssueId, p.features, p.layers, p.from, p.to, p.samplePlaces]);
+  useEffect(() => { sync(); syncMarkers(); /* eslint-disable-next-line */ }, [p.routes, p.selectedId, p.selectedIssueId, p.features, p.layers, p.from, p.to, p.samplePlaces, p.featured]);
 
   useEffect(() => { if (map.current) map.current.getCanvas().style.cursor = p.pickMode ? 'crosshair' : ''; }, [p.pickMode]);
 
