@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
+import { logged, type LogMeta } from '@/lib/log';
+
 import { loadRegion, osmProv } from '@/lib/osm';
 import { kerbHeightCm } from '@/lib/tags';
 import { listReports, reportProv } from '@/lib/reports';
 export const dynamic = 'force-dynamic';
 
 /** Map overlay features (benches, toilets, steps, kerbs, lifts) for a viewport, with provenance. */
-export async function GET(req: Request) {
+export const GET = logged('map-layers', async (req: Request, meta: LogMeta) => {
   const bb = (new URL(req.url).searchParams.get('bbox') ?? '').split(',').map(Number);
   if (bb.length !== 4 || bb.some((n) => !Number.isFinite(n))) return NextResponse.json({ error: 'bad_request' }, { status: 400 });
   const [w, s, e, n] = bb;
@@ -29,8 +31,9 @@ export async function GET(req: Request) {
     if (inView(lat, lon)) features.push({ kind: 'steps', label: wy.tags.step_count ?? '', lat, lon, prov: osmProv('way', wy.id, wy.tags, wy.ts), tags: pick(wy.tags) });
   }
   const reports = (await listReports()).filter((r) => inView(r.lat, r.lon)).map((r) => ({ ...r, prov: reportProv(r) }));
+  Object.assign(meta, { n: features.length, reports: reports.length, state: region.state });
   return NextResponse.json({ features, reports, state: region.state, fetchedAt: region.fetchedAt });
-}
+});
 function pick(t: Record<string, string>) {
   const keys = ['wheelchair', 'kerb', 'kerb:height', 'surface', 'smoothness', 'step_count', 'ramp', 'ramp:wheelchair', 'handrail', 'backrest', 'fee', 'opening_hours', 'crossing', 'tactile_paving', 'check_date', 'width'];
   return Object.fromEntries(keys.filter((k) => t[k] !== undefined).map((k) => [k, t[k]]));

@@ -1,13 +1,16 @@
 import { NextResponse } from 'next/server';
+import { logged, type LogMeta } from '@/lib/log';
+
 import fs from 'node:fs/promises';
 import path from 'node:path';
 export const dynamic = 'force-dynamic';
 
 const PHOTON = process.env.PHOTON_URL ?? 'https://photon.komoot.io/api/';
 
-export async function GET(req: Request) {
+export const GET = logged('search', async (req: Request, meta: LogMeta) => {
   const u = new URL(req.url);
   const q = u.searchParams.get('q')?.trim();
+  meta.q = q?.slice(0, 60);
   if (!q || q.length < 2) return NextResponse.json({ results: [] });
   let samples: any[] = [];
   try { samples = JSON.parse(await fs.readFile(path.join(process.cwd(), 'data', 'sample-places.json'), 'utf8')); } catch { /* none */ }
@@ -27,8 +30,10 @@ export async function GET(req: Request) {
         osm: p.osm_type && p.osm_id ? `${({ N: 'node', W: 'way', R: 'relation' } as any)[p.osm_type]}/${p.osm_id}` : null,
       };
     });
+    meta.n = results.length;
     return NextResponse.json({ results: [...sampleHits, ...results] });
   } catch {
+    meta.error = 'geocoder_unavailable';
     return NextResponse.json({ results: sampleHits, error: 'geocoder_unavailable' }, { status: 200 });
   }
-}
+});

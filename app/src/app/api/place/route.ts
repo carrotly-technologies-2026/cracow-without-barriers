@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { logged, type LogMeta } from '@/lib/log';
+
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { haversine, bboxOf } from '@/lib/geo';
@@ -45,7 +47,7 @@ async function fetchElement(ref: string): Promise<any | null> {
   return null;
 }
 
-export async function GET(req: Request) {
+export const GET = logged('place', async (req: Request, meta: LogMeta) => {
   const u = new URL(req.url);
   const sampleId = u.searchParams.get('sample');
   const osmRef = u.searchParams.get('osm');
@@ -108,5 +110,6 @@ export async function GET(req: Request) {
   }
   toilets.sort((a, b) => a.dist - b.dist);
   const resolved = resolveFacts(ATTRS, facts);
+  Object.assign(meta, { place: name || undefined, osmRef: osmRef ?? undefined, sample: sampleId ?? undefined, state: osmState });
   return NextResponse.json({ name, lat, lon, sample, resolved, toilets: toilets.slice(0, 3), osm: osmState, tags: osmTags, hasData: facts.length > 0 });
-}
+});
