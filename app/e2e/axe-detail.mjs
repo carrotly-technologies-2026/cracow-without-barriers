@@ -1,0 +1,10 @@
+import { chromium } from 'playwright-core';
+import AxeBuilder from '@axe-core/playwright';
+const b = await chromium.launch({ executablePath: '/usr/bin/chromium', args: ['--no-sandbox'] });
+const p = await (await b.newContext({ viewport: { width: 1366, height: 820 } })).newPage();
+await p.goto('http://localhost:3000'); await p.waitForTimeout(1500);
+await p.getByRole('button', { name: /Pokaż przykład/ }).click();
+await p.waitForSelector('text=Najlepsza dla Ciebie', { timeout: 120000 }); await p.waitForTimeout(2000);
+const r = await new AxeBuilder({ page: p }).withTags(['wcag2aa', 'wcag22aa']).analyze();
+for (const v of r.violations) for (const n of v.nodes) console.log(v.id, n.html.slice(0, 120), '\n  ', n.any.map((a) => a.message).join(' | ').slice(0, 300));
+await b.close();
