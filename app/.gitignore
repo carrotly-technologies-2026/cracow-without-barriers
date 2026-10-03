@@ -1,0 +1,8 @@
+node_modules
+.next
+data/cache
+data/reports.json
+tsconfig.tsbuildinfo
+next-env.d.ts
+AGENTS.md
+CLAUDE.md
