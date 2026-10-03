@@ -12,7 +12,33 @@
    "tags": {
     "wheelchair": "yes",
     "opening_hours": "Mo-Sa 08:00-22:00, Su 10:00-22:00"
-   }
+   },
+   "declared": [
+    {
+     "attr": "door_width",
+     "value": "1.10",
+     "updated": "2026-08-21",
+     "confidence": "likely"
+    },
+    {
+     "attr": "lift",
+     "value": "no",
+     "updated": "2026-07-19",
+     "confidence": "likely"
+    },
+    {
+     "attr": "automatic_door",
+     "value": "yes",
+     "updated": "2026-07-04",
+     "confidence": "likely"
+    },
+    {
+     "attr": "toilet",
+     "value": "yes",
+     "updated": "2026-07-16",
+     "confidence": "likely"
+    }
+   ]
   },
   {
    "osm": "node/470637599",
@@ -25,7 +51,33 @@
     "wheelchair": "yes",
     "check_date": "2025-10-24",
     "opening_hours": "24/7"
-   }
+   },
+   "declared": [
+    {
+     "attr": "door_width",
+     "value": "1.20",
+     "updated": "2026-07-23",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "automatic_door",
+     "value": "yes",
+     "updated": "2026-09-21",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "toilet",
+     "value": "yes",
+     "updated": "2026-07-21",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "lift",
+     "value": "yes",
+     "updated": "2026-09-15",
+     "confidence": "confirmed"
+    }
+   ]
   },
   {
    "osm": "node/475387315",
@@ -37,7 +89,33 @@
    "tags": {
     "wheelchair": "yes",
     "opening_hours": "Su-Th 09:00-21:00; Fr,Sa 09:00-22:00"
-   }
+   },
+   "declared": [
+    {
+     "attr": "entrance_step",
+     "value": "no",
+     "updated": "2026-07-20",
+     "confidence": "likely"
+    },
+    {
+     "attr": "automatic_door",
+     "value": "yes",
+     "updated": "2026-07-21",
+     "confidence": "likely"
+    },
+    {
+     "attr": "lift",
+     "value": "yes",
+     "updated": "2026-08-20",
+     "confidence": "likely"
+    },
+    {
+     "attr": "door_width",
+     "value": "0.95",
+     "updated": "2026-09-08",
+     "confidence": "likely"
+    }
+   ]
   },
   {
    "osm": "node/475613690",
@@ -52,7 +130,33 @@
     "toilets:wheelchair": "limited",
     "toilets:access": "customers",
     "opening_hours": "Mo-Fr 10:00-00:00; Sa-Su 10:00-01:00"
-   }
+   },
+   "declared": [
+    {
+     "attr": "automatic_door",
+     "value": "no",
+     "updated": "2026-09-25",
+     "confidence": "likely"
+    },
+    {
+     "attr": "entrance_step",
+     "value": "yes",
+     "updated": "2026-07-21",
+     "confidence": "likely"
+    },
+    {
+     "attr": "lift",
+     "value": "yes",
+     "updated": "2026-07-22",
+     "confidence": "likely"
+    },
+    {
+     "attr": "door_width",
+     "value": "0.80",
+     "updated": "2026-07-18",
+     "confidence": "likely"
+    }
+   ]
   },
   {
    "osm": "node/475387314",
@@ -64,7 +168,33 @@
    "tags": {
     "wheelchair": "yes",
     "opening_hours": "Mo-Su 10:00-22:00"
-   }
+   },
+   "declared": [
+    {
+     "attr": "entrance_step",
+     "value": "no",
+     "updated": "2026-07-08",
+     "confidence": "likely"
+    },
+    {
+     "attr": "automatic_door",
+     "value": "no",
+     "updated": "2026-09-27",
+     "confidence": "likely"
+    },
+    {
+     "attr": "door_width",
+     "value": "1.20",
+     "updated": "2026-07-05",
+     "confidence": "likely"
+    },
+    {
+     "attr": "lift",
+     "value": "no",
+     "updated": "2026-09-12",
+     "confidence": "likely"
+    }
+   ]
   },
   {
    "osm": "node/490986139",
@@ -75,7 +205,33 @@
    "timestamp": "2026-09-15T23:08:01Z",
    "tags": {
     "wheelchair": "yes"
-   }
+   },
+   "declared": [
+    {
+     "attr": "toilet",
+     "value": "yes",
+     "updated": "2026-07-27",
+     "confidence": "likely"
+    },
+    {
+     "attr": "door_width",
+     "value": "1.20",
+     "updated": "2026-08-07",
+     "confidence": "likely"
+    },
+    {
+     "attr": "lift",
+     "value": "no",
+     "updated": "2026-08-16",
+     "confidence": "likely"
+    },
+    {
+     "attr": "entrance_step",
+     "value": "no",
+     "updated": "2026-07-24",
+     "confidence": "likely"
+    }
+   ]
   },
   {
    "osm": "node/475613654",
@@ -86,7 +242,33 @@
    "timestamp": "2023-11-03T22:42:21Z",
    "tags": {
     "wheelchair": "no"
-   }
+   },
+   "declared": [
+    {
+     "attr": "entrance_step",
+     "value": "yes",
+     "updated": "2026-09-18",
+     "confidence": "likely"
+    },
+    {
+     "attr": "lift",
+     "value": "no",
+     "updated": "2026-09-17",
+     "confidence": "likely"
+    },
+    {
+     "attr": "door_width",
+     "value": "0.70",
+     "updated": "2026-07-05",
+     "confidence": "likely"
+    },
+    {
+     "attr": "automatic_door",
+     "value": "no",
+     "updated": "2026-08-18",
+     "confidence": "likely"
+    }
+   ]
   },
   {
    "osm": "node/475613547",
@@ -99,7 +281,33 @@
     "wheelchair": "yes",
     "toilets": "yes",
     "opening_hours": "Mo-Su,PH 12:00-23:00"
-   }
+   },
+   "declared": [
+    {
+     "attr": "entrance_step",
+     "value": "no",
+     "updated": "2026-09-14",
+     "confidence": "likely"
+    },
+    {
+     "attr": "automatic_door",
+     "value": "yes",
+     "updated": "2026-07-17",
+     "confidence": "likely"
+    },
+    {
+     "attr": "door_width",
+     "value": "0.95",
+     "updated": "2026-08-08",
+     "confidence": "likely"
+    },
+    {
+     "attr": "lift",
+     "value": "no",
+     "updated": "2026-09-06",
+     "confidence": "likely"
+    }
+   ]
   },
   {
    "osm": "node/475613715",
@@ -113,7 +321,33 @@
     "check_date": "2025-12-22",
     "toilets": "yes",
     "opening_hours": "Mo-Su 11:00-19:00"
-   }
+   },
+   "declared": [
+    {
+     "attr": "lift",
+     "value": "yes",
+     "updated": "2026-08-15",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "entrance_step",
+     "value": "no",
+     "updated": "2026-08-05",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "toilet",
+     "value": "yes",
+     "updated": "2026-07-17",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "door_width",
+     "value": "1.20",
+     "updated": "2026-08-20",
+     "confidence": "confirmed"
+    }
+   ]
   },
   {
    "osm": "node/475387250",
@@ -127,7 +361,33 @@
     "check_date": "2025-07-24",
     "toilets:wheelchair": "no",
     "opening_hours": "Mo-Th 13:00-23:00; Fr-Su 12:00-23:00"
-   }
+   },
+   "declared": [
+    {
+     "attr": "entrance_step",
+     "value": "yes",
+     "updated": "2026-09-16",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "automatic_door",
+     "value": "no",
+     "updated": "2026-08-24",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "lift",
+     "value": "yes",
+     "updated": "2026-08-10",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "door_width",
+     "value": "0.85",
+     "updated": "2026-07-05",
+     "confidence": "confirmed"
+    }
+   ]
   },
   {
    "osm": "node/475613695",
@@ -139,7 +399,33 @@
    "tags": {
     "wheelchair": "yes",
     "check_date": "2025-07-28"
-   }
+   },
+   "declared": [
+    {
+     "attr": "automatic_door",
+     "value": "yes",
+     "updated": "2026-08-12",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "lift",
+     "value": "yes",
+     "updated": "2026-07-07",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "toilet",
+     "value": "yes",
+     "updated": "2026-08-20",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "entrance_step",
+     "value": "no",
+     "updated": "2026-08-22",
+     "confidence": "confirmed"
+    }
+   ]
   },
   {
    "osm": "node/279040195",
@@ -153,7 +439,33 @@
     "check_date": "2025-12-20",
     "level": "-1",
     "opening_hours": "Mo-We 10:00-01:00; Th,Fr 10:00-03:00; Sa 12:00-03:00; Su 12:00-01:00"
-   }
+   },
+   "declared": [
+    {
+     "attr": "lift",
+     "value": "no",
+     "updated": "2026-08-27",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "entrance_step",
+     "value": "yes",
+     "updated": "2026-09-20",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "toilet",
+     "value": "no",
+     "updated": "2026-08-15",
+     "confidence": "confirmed"
+    },
+    {
+     "attr": "door_width",
+     "value": "0.80",
+     "updated": "2026-08-15",
+     "confidence": "confirmed"
+    }
+   ]
   }
  ]
 }

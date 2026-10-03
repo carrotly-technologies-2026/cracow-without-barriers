@@ -26,6 +26,13 @@ async function featuredSnapshot(ref: string): Promise<any | null> {
   } catch { return null; }
 }
 
+async function featuredDeclared(ref: string): Promise<{ attr: string; value: string; updated: string; confidence: 'confirmed' | 'likely' }[]> {
+  try {
+    const j = JSON.parse(await fs.readFile(path.join(process.cwd(), 'data', 'featured-places.json'), 'utf8'));
+    return j.places.find((x: any) => x.osm === ref)?.declared ?? [];
+  } catch { return []; }
+}
+
 async function fetchElement(ref: string): Promise<any | null> {
   const [type, id] = ref.split('/');
   if (!['node', 'way', 'relation'].includes(type) || !/^\d+$/.test(id)) return null;
@@ -76,6 +83,9 @@ export async function GET(req: Request) {
     }
   }
 
+  if (osmRef) {
+    for (const dc of await featuredDeclared(osmRef)) facts.push({ attr: dc.attr, value: dc.value, prov: { source: 'owner', ref: 'Deklaracja właściciela', updated: new Date(dc.updated).toISOString(), confidence: dc.confidence, freshnessBasis: 'owner_declaration' } });
+  }
   // entrances, toilets & user reports around the place (from the same tile data used for routing)
   const region = await loadRegion(bboxOf([here], 120));
   if (region.state !== 'ok' && osmState === 'ok') osmState = region.state;
