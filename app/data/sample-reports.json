@@ -1,0 +1,39 @@
+[
+ {
+  "id": "sample-1",
+  "lat": 50.0540426,
+  "lon": 19.9456787,
+  "type": "kerb_high",
+  "note": "Krawężnik przy przejściu ok. 7 cm (PRZYKŁADOWE zgłoszenie – sprzeczne z OSM).",
+  "createdAt": "2026-09-28T10:00:00Z",
+  "clientIds": [
+   "sample-a"
+  ],
+  "sample": true
+ },
+ {
+  "id": "sample-2",
+  "lat": 50.063388,
+  "lon": 19.945069,
+  "type": "blocked",
+  "note": "Remont chodnika, wąskie przejście (PRZYKŁADOWE, niezweryfikowane).",
+  "createdAt": "2026-10-02T08:30:00Z",
+  "clientIds": [
+   "sample-b"
+  ],
+  "sample": true
+ },
+ {
+  "id": "sample-3",
+  "lat": 50.056401,
+  "lon": 19.945412,
+  "type": "rough",
+  "note": "Wyrwy w nawierzchni (PRZYKŁADOWE, potwierdzone przez 2 osoby).",
+  "createdAt": "2026-09-15T08:30:00Z",
+  "clientIds": [
+   "sample-c",
+   "sample-d"
+  ],
+  "sample": true
+ }
+]
