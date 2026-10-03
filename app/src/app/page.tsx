@@ -1,3 +1,2 @@
-export default function Page() {
-  return <main />;
-}
+import App from '@/components/App';
+export default function Page() { return <App />; }
